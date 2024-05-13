@@ -1,0 +1,22 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - PasswordManager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <div class="w-screen h-[100px] flex items-center justify-between bg-red-600">
+        <a class="text-3xl text-white ml-12" asp-controller="Home" asp-action="Index">PM</a>
+        <div class="flex items-center gap-8 mr-12">
+            <a href="#" class="text-xl text-white">Sign In</a>
+            <a href="#" class="text-xl text-white">Sign Up</a>
+        </div>
+    </div>
+    <div class="w-screen h-screen flex items-center justify-center">
+        @RenderBody()
+    </div>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
