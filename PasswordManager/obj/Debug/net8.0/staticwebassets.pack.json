@@ -5,6 +5,26 @@
       "PackagePath": "staticwebassets\\PasswordManager.bundle.scp.css"
     },
     {
+      "Id": "C:\\Users\\leche\\source\\repos\\PasswordManager\\PasswordManager\\wwwroot\\Public\\accept.png",
+      "PackagePath": "staticwebassets\\Public\\accept.png"
+    },
+    {
+      "Id": "C:\\Users\\leche\\source\\repos\\PasswordManager\\PasswordManager\\wwwroot\\Public\\avataricon.png",
+      "PackagePath": "staticwebassets\\Public\\avataricon.png"
+    },
+    {
+      "Id": "C:\\Users\\leche\\source\\repos\\PasswordManager\\PasswordManager\\wwwroot\\Public\\down-arrow.png",
+      "PackagePath": "staticwebassets\\Public\\down-arrow.png"
+    },
+    {
+      "Id": "C:\\Users\\leche\\source\\repos\\PasswordManager\\PasswordManager\\wwwroot\\Public\\mark.png",
+      "PackagePath": "staticwebassets\\Public\\mark.png"
+    },
+    {
+      "Id": "C:\\Users\\leche\\source\\repos\\PasswordManager\\PasswordManager\\wwwroot\\Public\\right-arrow.png",
+      "PackagePath": "staticwebassets\\Public\\right-arrow.png"
+    },
+    {
       "Id": "C:\\Users\\leche\\source\\repos\\PasswordManager\\PasswordManager\\wwwroot\\css\\site.css",
       "PackagePath": "staticwebassets\\css\\site.css"
     },
