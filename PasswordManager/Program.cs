@@ -16,7 +16,15 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.ExpireTimeSpan = TimeSpan.FromMinutes(20); // Change later on to increase
         options.SlidingExpiration = true;
         options.AccessDeniedPath = "/Forbidden";
+        options.LoginPath = "/Home/Signin";
+        options.LogoutPath = "/Home/Signout";
     });
+/*builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(20);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});*/
 
 var cookiePolicyOptions = new CookiePolicyOptions
 {
@@ -43,9 +51,10 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
-app.UseAuthentication();
+app.UseCookiePolicy(cookiePolicyOptions);
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
