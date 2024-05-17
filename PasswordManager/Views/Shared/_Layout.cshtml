@@ -10,13 +10,11 @@
     <div class="w-screen h-[100px] flex items-center justify-between bg-red-600">
         <a class="text-3xl text-white ml-12" asp-controller="Home" asp-action="Index">PM</a>
         <div class="flex items-center gap-8 mr-12">
-            <a href="#" class="text-xl text-white">Sign In</a>
-            <a href="#" class="text-xl text-white">Sign Up</a>
+            <a class="text-xl text-white" asp-controller="Home" asp-action="Signin">Sign In</a>
+            <a class="text-xl text-white" asp-controller="Home" asp-action="Signup">Sign Up</a>
         </div>
     </div>
-    <div class="w-screen h-screen flex items-center justify-center">
-        @RenderBody()
-    </div>
+    @RenderBody()
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
