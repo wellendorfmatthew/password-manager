@@ -14,9 +14,7 @@
             <a class="text-xl text-white" asp-controller="Home" asp-action="Signup">Sign Up</a>
         </div>
     </div>
-    <div class="w-screen h-screen flex items-center justify-center">
-        @RenderBody()
-    </div>
+    @RenderBody()
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

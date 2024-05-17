@@ -37,11 +37,13 @@ namespace PasswordManager.Controllers
         [HttpPost]
         public async Task<IActionResult> Signin(SignInViewModel model)
         {
+            _logger.LogInformation($"{ModelState.IsValid}");
             if (ModelState.IsValid) 
             {
                 String hashedPassword = HashPassword(model.Password);
                 var user = await _context.Users
                     .FirstOrDefaultAsync(u => u.Username == model.Username && u.Password == hashedPassword);
+                _logger.LogInformation($"{user} yo");
 
                 if (user != null)
                 {
@@ -60,7 +62,7 @@ namespace PasswordManager.Controllers
                         ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(10),
                         IsPersistent = true,
                         IssuedUtc = DateTimeOffset.UtcNow,
-                        // RedirectUri = ?
+                        RedirectUri = Url.Action("Index", "Home")
                     };
 
 
@@ -76,7 +78,8 @@ namespace PasswordManager.Controllers
                 }
                 else
                 {
-                    ModelState.AddModelError(string.Empty, "Unable to login please try again");
+                    ModelState.AddModelError(string.Empty, "Invalid username or password please try again");
+                    _logger.LogInformation("Cant login");
                 }
             }
 
@@ -124,7 +127,7 @@ namespace PasswordManager.Controllers
                     ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(10),
                     IsPersistent = true,
                     IssuedUtc = DateTimeOffset.UtcNow,
-                    // RedirectUri = ?
+                    RedirectUri = Url.Action("Index", "Home")
                 };
 
 
