@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using System.Security.Cryptography;
 using System.Text;
+using System;
 using PasswordManager.ViewModels;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -23,9 +24,39 @@ namespace PasswordManager.Controllers
             _context = context;
         }
 
+        [HttpGet]
         public IActionResult Index()
         {
-            return View();
+            const string uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            const string lowercase = "abcdefghijklmnopqrstuvwxyz";
+            const string numbers = "0123456789";
+            const string specialCharacters = "!@#$%^&*_+-?";
+            string allCharacters = uppercase + lowercase + numbers + specialCharacters;
+            string password = "";
+            Random random = new Random();
+
+            password += uppercase[random.Next(uppercase.Length)];
+            password += lowercase[random.Next(lowercase.Length)];
+            password += numbers[random.Next(numbers.Length)];
+            password += specialCharacters[random.Next(specialCharacters.Length)];
+
+            for (int i = 0; i < 7; i++)
+            {
+                password += allCharacters[random.Next(allCharacters.Length)];
+            }
+
+            var model = new PasswordGeneratorViewModel
+            {
+                Length = 11,
+                IncludeUpper = true,
+                IncludeLower = true,
+                IncludeNumbers = true,
+                IncludeSymbols = true,
+                PasswordStrength = "Strong Password",
+                GeneratedPassword = password
+            };
+
+            return View(model);
         }
 
         [HttpGet]
@@ -183,6 +214,65 @@ namespace PasswordManager.Controllers
                 }
                 return builder.ToString();
             }
+        }
+
+        [HttpPost]
+        public IActionResult GeneratePassword(PasswordGeneratorViewModel model)
+        {
+            const string uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            const string lowercase = "abcdefghijklmnopqrstuvwxyz";
+            const string numbers = "0123456789";
+            const string specialCharacters = "!@#$%^&*_+-?";
+            string allCharacters = "";
+            string password = "";
+            int score = 0;
+            Random random = new Random();
+
+            if (model.IncludeUpper)
+            {
+                password += uppercase[random.Next(uppercase.Length)];
+                allCharacters += uppercase;
+                score++;
+            }
+
+            if (model.IncludeLower)
+            {
+                password += uppercase[random.Next(uppercase.Length)];
+                allCharacters += lowercase;
+                score++;
+            }
+
+            if (model.IncludeNumbers)
+            {
+                password += uppercase[random.Next(uppercase.Length)];
+                allCharacters += numbers;
+                score++;
+            }
+
+            if (model.IncludeSymbols)
+            {
+                password += uppercase[random.Next(uppercase.Length)];
+                allCharacters += specialCharacters;
+                score++;
+            }
+
+            for (int i = 0; i < model.Length - 4; i++)
+            {
+                password += allCharacters[random.Next(allCharacters.Length)];
+            }
+
+            model.GeneratedPassword = password;
+
+            if (score == 4 && password.Length >= 11)
+            {
+                model.PasswordStrength = "Strong Password";
+            }
+            else
+            {
+                model.PasswordStrength = "Weak Password";
+            }
+
+            return RedirectToAction("Index", "Home");
         }
     }
 }
