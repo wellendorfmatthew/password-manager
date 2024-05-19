@@ -1,47 +1,50 @@
-﻿@{
+﻿@model PasswordManager.ViewModels.PasswordGeneratorViewModel
+
+@{
     ViewData["Title"] = "Password Generator";
 }
 
 <div class="w-screen h-screen flex items-center justify-center flex-col gap-10 mb-52">
     <h2 class="text-2xl text-black font-semibold">Password Generator</h2>
     <div class="w-1/2 h-[500px] bg-red-600 flex items-center justify-center flex-col gap-4">
-        <h2 class="text-3xl text-white mb-4">Length: 11</h2>
         <div class="gap-2 flex flex-col w-1/2 items-center">
-            <p class="text-2xl text-white">a435Bc#;56^</p>
+            <p class="text-xl text-white truncate text-nowrap w-full" id="generated-password">@Model.GeneratedPassword</p>
             <hr class="border-white border-2 w-full" />
-            <p class="text-xl text-white">Strong Password</p>
+            <p class="text-xl text-white mb-8" id="password-strength">@Model.PasswordStrength</p>
+            <input type="range" id="length-slider" asp-for="Length" min="4" max="64" value="@Model.Length" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700">
+            <label for="Length" class="block mb-2 text-xl text-white">Length: <span id="length-value">@Model.Length</span></label>
         </div>
-        <button class="h-16 w-[150px] bg-yellow-200 text-2xl">
+        <button class="h-16 w-[150px] bg-yellow-200 text-2xl" id="copy-button">
             Copy
         </button>
-        <button class="h-16 w-[150px] bg-white text-2xl">
-            Reset
+        <button class="h-16 w-[150px] bg-white text-2xl" id="regenerate-button">
+            Regenerate
         </button>
         <div class="flex flex-col gap-10">
             <div class="flex gap-20">
-                <div class="flex gap-2 items-center">
-                    <input type="checkbox" name="upper" value="" class="size-4" />
-                    <label id="upper" class="text-base font-semibold">
+				<div class="flex gap-2 items-center">
+                    <input type="checkbox" asp-for="IncludeUpper" id="include-upper" class="size-4" />
+                    <label for="IncludeUpper" class="text-base font-semibold">
                         Upper
                     </label>
                 </div>
                 <div class="flex gap-2 items-center">
-                    <input type="checkbox" name="lower" value="" class="size-4" />
-                    <label id="lower" class="text-base font-semibold">
+                    <input type="checkbox" asp-for="IncludeLower" id="include-lower" class="size-4" />
+                    <label for="IncludeLower" class="text-base font-semibold">
                         Lower
                     </label>
                 </div>
             </div>
             <div class="flex gap-20">
                 <div class="flex gap-2 items-center">
-                    <input type="checkbox" name="numbers" value="" class="size-4" />
-                    <label id="numbers" class="text-base font-semibold">
+                    <input type="checkbox" asp-for="IncludeNumbers" id="include-numbers" class="size-4" />
+                    <label for="IncludeNumbers" class="text-base font-semibold">
                         Numbers
                     </label>
                 </div>
                 <div class="flex gap-2 items-center">
-                    <input type="checkbox" name="symbols" value="" class="size-4" />
-                    <label id="symbols" class="text-base font-semibold">
+                    <input type="checkbox" asp-for="IncludeSymbols" id="include-symbols" class="size-4" />
+                    <label for="IncludeSymbols" class="text-base font-semibold">
                         Symbols
                     </label>
                 </div>
@@ -49,3 +52,57 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            function generatePassword() {
+                var length = $('#length-slider').val();
+                var includeUpper = $('#include-upper').is(':checked');
+                var includeLower = $('#include-lower').is(':checked');
+                var includeNumbers = $('#include-numbers').is(':checked');
+                var includeSymbols = $('#include-symbols').is(':checked');
+
+                $.ajax({
+                    type: 'POST',
+                    url: 'Home/GeneratePassword',
+                    data: JSON.stringify({
+                        Length: length,
+                        IncludeUpper: includeUpper,
+                        IncludeLower: includeLower,
+                        IncludeNumbers: includeNumbers,
+                        IncludeSymbols: includeSymbols
+                    }),
+                    contentType: 'application/json',
+                    success: function (response) {
+                        $('#generated-password').text(response.generatedPassword);
+                        $('#password-strength').text(response.passwordStrength);
+                        $('#length-value').text(length);
+                        console.log(response);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error(error);
+                    }
+                });
+            }
+            $('#length-slider').on('input', generatePassword);
+            $('#regenerate-button').on('click', generatePassword);
+            $('#include-upper').on('change', generatePassword);
+            $('#include-lower').on('change', generatePassword);
+            $('#include-numbers').on('change', generatePassword);
+            $('#include-symbols').on('change', generatePassword);
+
+            $('#copy-button').on('click', function () {
+                var passwordText = $('#generated-password').text();
+
+                try {
+                    navigator.clipboard.writeText(passwordText)
+                } catch (error) {
+                    console.error(error);
+                }
+            });
+        }); 
+    </script>
+}
