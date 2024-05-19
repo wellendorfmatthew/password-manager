@@ -217,8 +217,9 @@ namespace PasswordManager.Controllers
         }
 
         [HttpPost]
-        public IActionResult GeneratePassword(PasswordGeneratorViewModel model)
+        public IActionResult GeneratePassword([FromBody] PasswordGeneratorViewModel model)
         {
+            _logger.LogInformation($"{model.GeneratedPassword}y");
             const string uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
             const string lowercase = "abcdefghijklmnopqrstuvwxyz";
             const string numbers = "0123456789";
@@ -237,21 +238,21 @@ namespace PasswordManager.Controllers
 
             if (model.IncludeLower)
             {
-                password += uppercase[random.Next(uppercase.Length)];
+                password += lowercase[random.Next(lowercase.Length)];
                 allCharacters += lowercase;
                 score++;
             }
 
             if (model.IncludeNumbers)
             {
-                password += uppercase[random.Next(uppercase.Length)];
+                password += numbers[random.Next(numbers.Length)];
                 allCharacters += numbers;
                 score++;
             }
 
             if (model.IncludeSymbols)
             {
-                password += uppercase[random.Next(uppercase.Length)];
+                password += specialCharacters[random.Next(specialCharacters.Length)];
                 allCharacters += specialCharacters;
                 score++;
             }
@@ -262,6 +263,7 @@ namespace PasswordManager.Controllers
             }
 
             model.GeneratedPassword = password;
+            _logger.LogInformation($"{model.GeneratedPassword}");
 
             if (score == 4 && password.Length >= 11)
             {
@@ -272,7 +274,22 @@ namespace PasswordManager.Controllers
                 model.PasswordStrength = "Weak Password";
             }
 
-            return RedirectToAction("Index", "Home");
+            var newModel = new PasswordGeneratorViewModel
+            {
+                Length = password.Length,
+                IncludeUpper = model.IncludeUpper,
+                IncludeLower = model.IncludeLower,
+                IncludeNumbers = model.IncludeNumbers,
+                IncludeSymbols = model.IncludeSymbols,
+                PasswordStrength = model.PasswordStrength,
+                GeneratedPassword = password
+            };
+
+            return Json(new
+            {
+                GeneratedPassword = model.GeneratedPassword,
+                PasswordStrength = model.PasswordStrength
+            });
         }
     }
 }
