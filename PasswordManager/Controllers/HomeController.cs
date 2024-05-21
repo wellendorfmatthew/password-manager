@@ -10,6 +10,7 @@ using PasswordManager.ViewModels;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 
 namespace PasswordManager.Controllers
 {
@@ -176,21 +177,25 @@ namespace PasswordManager.Controllers
             return View(model);
         }
 
+        [Authorize]
         public IActionResult NewPassword()
         {
             return View();
         }
 
+        [Authorize]
         public IActionResult PasswordManager()
         {
             return View();
         }
 
+        [Authorize]
         public IActionResult Report()
         {
             return View();
         }
 
+        [Authorize]
         public IActionResult EditPassword()
         {
             return View();
