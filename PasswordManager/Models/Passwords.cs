@@ -14,5 +14,7 @@ namespace PasswordManager.Models
         [Required]
         public string Website { get; set; }
         public string? Notes { get; set; }
+
+        public Users User { get; set; }
     }
 }

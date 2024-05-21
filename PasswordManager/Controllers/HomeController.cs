@@ -82,7 +82,8 @@ namespace PasswordManager.Controllers
                     var claims = new List<Claim>
                     {
                         new Claim(ClaimTypes.Name, user.Username),
-                        new Claim("Password", hashedPassword)
+                        new Claim("Password", hashedPassword),
+                        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
                     };
 
                     var claimsIdentity = new ClaimsIdentity(
@@ -147,7 +148,8 @@ namespace PasswordManager.Controllers
                 var claims = new List<Claim>
                     {
                         new Claim(ClaimTypes.Name, user.Username),
-                        new Claim("Password", user.Password)
+                        new Claim("Password", user.Password),
+                        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
                     };
 
                 var claimsIdentity = new ClaimsIdentity(
@@ -181,6 +183,33 @@ namespace PasswordManager.Controllers
         public IActionResult NewPassword()
         {
             return View();
+        }
+
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> NewPassword(Passwords model)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+
+            if (userIdClaim == null) 
+            {
+                return Unauthorized();
+            }
+
+            int userId = int.Parse(userIdClaim.Value);
+
+            var password = new Passwords
+            {
+                Username = model.Username,
+                Password = model.Password,
+                Website = model.Website,
+                UserId = userId
+            };
+
+            _context.Passwords.Add(password);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("PasswordManager");
         }
 
         [Authorize]
