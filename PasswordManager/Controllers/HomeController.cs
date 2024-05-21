@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Security.Cryptography;
 using System.Text;
 using System;
+using System.Collections;
 using PasswordManager.ViewModels;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -213,9 +214,30 @@ namespace PasswordManager.Controllers
         }
 
         [Authorize]
-        public IActionResult PasswordManager()
+        public async Task<IActionResult> PasswordManager()
         {
-            return View();
+            var passwords = await GetUserPasswords();
+
+            if (passwords  == null || !passwords.Any()) 
+            { 
+                return Unauthorized(); // Will likely need to change later
+            }
+
+            return View(passwords);
+        }
+
+        public async Task<IEnumerable<Passwords>> GetUserPasswords()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+
+            if (userIdClaim == null)
+            {
+                return Enumerable.Empty<Passwords>();
+            }
+
+            int userId = int.Parse(userIdClaim.Value);
+
+            return await _context.Passwords.Where(p => p.UserId == userId).ToListAsync();
         }
 
         [Authorize]
