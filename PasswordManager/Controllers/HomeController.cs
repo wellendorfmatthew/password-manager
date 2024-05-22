@@ -247,9 +247,72 @@ namespace PasswordManager.Controllers
         }
 
         [Authorize]
-        public IActionResult EditPassword()
+        [HttpGet("EditPassword/{id}")]
+        public async Task<IActionResult> EditPassword(int id)
         {
-            return View();
+            _logger.LogInformation($"Logging {id}");
+
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+
+            if (userIdClaim == null)
+            {
+                return Unauthorized();
+            }
+
+            int userId = int.Parse(userIdClaim.Value);
+
+            Passwords password = await _context.Passwords.Where(p => p.UserId == userId && p.Id == id).FirstAsync();
+
+            return View(password);
+        }
+
+        [Authorize]
+        [HttpPut("EditPassword/{id}")]
+        public async Task<IActionResult> EditPassword([FromBody] Passwords model,  int id)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+
+            if (userIdClaim == null)
+            {
+                return Unauthorized();
+            }
+
+            int userId = int.Parse(userIdClaim.Value);
+
+            await _context.Passwords.Where(p => p.UserId == userId && p.Id == id).ExecuteUpdateAsync(setters => setters
+                .SetProperty(p => p.Username, model.Username)
+                .SetProperty(p => p.Password, model.Password)
+                .SetProperty(p => p.Notes, model.Notes)
+                );
+
+            await _context.SaveChangesAsync();
+
+            return Json(new
+            { 
+                Username = model.Username,
+                Password = model.Password,
+                Notes = model.Notes,
+            });
+        }
+
+        [Authorize]
+        [HttpDelete("DeletePassword/{id}")]
+        public async Task<IActionResult> DeletePassword(int id)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+
+            if (userIdClaim == null)
+            {
+                return Unauthorized();
+            }
+
+            int userId = int.Parse(userIdClaim.Value);
+
+            await _context.Passwords.Where(p => p.UserId == userId && p.Id == id).ExecuteDeleteAsync();
+
+            await _context.SaveChangesAsync();
+
+            return Json(new { redirectToUrl = Url.Action("PasswordManager", "Home") });
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
