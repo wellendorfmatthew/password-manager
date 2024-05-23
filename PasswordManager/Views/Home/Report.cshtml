@@ -1,4 +1,6 @@
-﻿@{
+﻿@model PasswordManager.ViewModels.ReportModel
+
+@{
     ViewData["Title"] = "Report";
 }
 
@@ -7,18 +9,96 @@
     <div class="w-1/2 h-[500px] border-black border flex items-center flex-col gap-12">
         <div class="w-full flex items-center flex-col">
             <div class="flex justify-between items-center w-full h-[80px]">
-                <img src="/Public/accept.png" class="ml-8" alt="Alternate Text" />
-                <p class="text-2xl font-semibold">All passwords unique</p>
-                <img src="/Public/down-arrow.png" class="mr-8" alt="Alternate Text" />
+                @if (@Model.IdenticalPasswords.Count > 0) {
+                    <img src="/Public/mark.png" class="ml-8" alt="Alternate Text" />
+                    <p class="text-2xl font-semibold">@Model.IdenticalPasswords.Count non unique passwords</p>
+                } else {
+                    <img src="/Public/accept.png" class="ml-8" alt="Alternate Text" />
+                    <p class="text-2xl font-semibold">All passwords unique</p>
+                }
+                <img src="/Public/down-arrow.png" class="mr-8 cursor-pointer" alt="Alternate Text" id="nonunique-arrow" />
             </div>
             <hr class="border-black h-[1px] w-full" />
+            <div class="w-full flex items-center flex-col" id="nonunique-items" style="display: none;">
+                <p class="text-xl font-semibold">Passwords shared amongst each other will be shown here</p>
+                @foreach(var item in Model.IdenticalPasswords)
+                {
+                    <div class="flex justify-between items-center w-full h-[80px]">
+                        <p class="text-2xl font-semibold ml-8">@item.Website</p>
+                        <p class="text-base text-gray-600">@item.Username</p>
+                        <a asp-controller="Home" asp-action="EditPassword" asp-route-id="@item.Id"><img src="/Public/right-arrow.png" class="mr-8" alt="Alternate Text" /></a>
+                    </div>
+                }
+            </div>
             <div class="flex justify-between items-center w-full h-[80px]">
-                <img src="/Public/accept.png" class="ml-8" alt="Alternate Text" />
-                <p class="text-2xl font-semibold">No weak passwords</p>
-                <img src="/Public/down-arrow.png" class="mr-8" alt="Alternate Text" />
+                @if (Model.WeakPasswords.Count > 0)
+                {
+                    <img src="/Public/mark.png" class="ml-8" alt="Alternate Text" />
+                    <p class="text-2xl font-semibold">@Model.WeakPasswords.Count weak passwords</p>
+                } else
+                {
+                    <img src="/Public/accept.png" class="ml-8" alt="Alternate Text" />
+                    <p class="text-2xl font-semibold">No weak passwords</p>
+                }
+                <img src="/Public/down-arrow.png" class="mr-8 cursor-pointer" alt="Alternate Text" id="weak-arrow" />
             </div>
             <hr class="border-black h-[1px] w-full" />
+            <div class="w-full flex items-center flex-col" id="weak-items" style="display: none;">
+                @foreach (var item in Model.WeakPasswords)
+                {
+                    <div class="flex justify-between items-center w-full h-[80px]">
+                        <p class="text-2xl font-semibold ml-8">@item.Key.Website</p>
+                        <p class="text-base text-gray-600">@item.Key.Username</p>
+                        <a asp-controller="Home" asp-action="EditPassword" asp-route-id="@item.Key.Id"><img src="/Public/right-arrow.png" class="mr-8" alt="Alternate Text" /></a>
+                    </div>
+                }
+                <p class="text-xl font-semibold">Passwords must contain at least:</p>
+                <ul class="list-disc">
+                    <li class="font-semibold">1 upper case character</li>
+                    <li class="font-semibold">1 lower case character</li>
+                    <li class="font-semibold">1 special character</li>
+                    <li class="font-semibold">1 number</li>
+                    <li class="font-semibold">11 characters</li>
+                </ul>
+            </div>
         </div>
-        <p class="text-2xl font-semibold">After analyzing 0 issues were found</p>
+        <p class="text-2xl font-semibold">After analyzing @(Model.WeakPasswords.Count + @Model.IdenticalPasswords.Count) issues were found</p>
     </div>
 </div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            function handleUniqueArrow() {
+                var arrow = $('#nonunique-arrow');
+                var container = $('#nonunique-items');
+
+                if (container.is(':visible')) {
+                    container.slideUp();
+                    arrow.attr("src", "/Public/down-arrow.png");
+                } else {
+                    container.slideDown();
+                    arrow.attr("src", "/Public/up-arrow.png");
+                }
+            }
+
+            function handleWeakArrow() {
+                var arrow = $('#weak-arrow');
+                var container = $('#weak-items');
+
+                if (container.is(':visible')) {
+                    container.slideUp();
+                    arrow.attr("src", "/Public/down-arrow.png");
+                } else {
+                    container.slideDown();
+                    arrow.attr("src", "/Public/up-arrow.png");
+                }
+            }
+
+            $('#nonunique-arrow').on('click', handleUniqueArrow);
+            $('#weak-arrow').on('click', handleWeakArrow);
+        });
+    </script>
+}

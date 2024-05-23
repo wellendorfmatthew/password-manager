@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "R2vSvnIfKdcw+EMbDPG9Lws8mmcH5fH4a+PdjgarW8I=",
+  "Hash": "WzQnwQEhD/N1Lc7CYiSbEDloAXaQGnXylAy380KTfPY=",
   "Source": "PasswordManager",
   "BasePath": "_content/PasswordManager",
   "Mode": "Default",
@@ -1288,6 +1288,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\Public\\right-arrow.png"
+    },
+    {
+      "Identity": "C:\\Users\\leche\\source\\repos\\PasswordManager\\PasswordManager\\wwwroot\\Public\\up-arrow.png",
+      "SourceId": "PasswordManager",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\leche\\source\\repos\\PasswordManager\\PasswordManager\\wwwroot\\",
+      "BasePath": "_content/PasswordManager",
+      "RelativePath": "Public/up-arrow.png",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\Public\\up-arrow.png"
     }
   ]
 }

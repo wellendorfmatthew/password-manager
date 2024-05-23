@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Security.Cryptography;
 using System.Text;
 using System;
+using System.Collections;
 using PasswordManager.ViewModels;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -213,21 +214,196 @@ namespace PasswordManager.Controllers
         }
 
         [Authorize]
-        public IActionResult PasswordManager()
+        public async Task<IActionResult> PasswordManager()
         {
-            return View();
+            var passwords = await GetUserPasswords();
+
+            if (passwords  == null || !passwords.Any()) 
+            { 
+                return Unauthorized(); // Will likely need to change later
+            }
+
+            return View(passwords);
+        }
+
+        public async Task<IEnumerable<Passwords>> GetUserPasswords()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+
+            if (userIdClaim == null)
+            {
+                return [];
+            }
+
+            int userId = int.Parse(userIdClaim.Value);
+
+            return await _context.Passwords.Where(p => p.UserId == userId).ToListAsync();
         }
 
         [Authorize]
-        public IActionResult Report()
+        public async Task<IActionResult> Report()
         {
-            return View();
+            ReportModel model = new()
+            {
+                IdenticalPasswords = await NonUniquePasswords(),
+                WeakPasswords = await WeakPasswords()
+            };
+
+            return View(model);
+        }
+
+        public async Task<List<Passwords>> NonUniquePasswords()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+
+            if (userIdClaim == null)
+            {
+                return [];
+            }
+
+            int userId = int.Parse(userIdClaim.Value);
+
+            List<Passwords> passwords = await _context.Passwords
+                .Where(p => p.UserId == userId)
+                .ToListAsync();
+
+            var nonUniquePasswordGroups = passwords
+                .GroupBy(p => p.Password)
+                .Where(g => g.Count() > 1)
+                .ToList();
+
+            List<Passwords> nonUniquePasswords = nonUniquePasswordGroups
+                .SelectMany(g => g)
+                .ToList();
+
+            return nonUniquePasswords;
+        }
+
+        public async Task<Dictionary<Passwords, string>> WeakPasswords()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            Dictionary<Passwords, string> weakPasswords = [];
+            const string uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            const string lowercase = "abcdefghijklmnopqrstuvwxyz";
+            const string numbers = "0123456789";
+            const string specialCharacters = "!@#$%^&*_+-?";
+
+            if (userIdClaim == null)
+            {
+                return weakPasswords;
+            }
+
+            int userId = int.Parse(userIdClaim.Value);
+
+            List<Passwords> passwords = await _context.Passwords
+                .Where(p => p.UserId == userId)
+                .ToListAsync();
+
+            foreach(var password in passwords)
+            {
+                string statement = "";
+
+                if (password.Password.Length < 11)
+                {
+                    statement += "Password must contain at least 11 characters";
+                }
+
+                if (!password.Password.Any(c => uppercase.Contains(c)))
+                {
+                    statement += "Password must contain at least one upper case character";
+                }
+
+                if (!password.Password.Any(c => lowercase.Contains(c)))
+                {
+                    statement += "Password must contain at least one lower case character";
+                }
+
+                if (!password.Password.Any(c => numbers.Contains(c)))
+                {
+                    statement += "Password must contain at least one number";
+                }
+
+                if (!password.Password.Any(c => specialCharacters.Contains(c)))
+                {
+                    statement += "Password must contain at least one special character";
+                }
+
+                if (!string.IsNullOrEmpty(statement))
+                {
+                    weakPasswords.Add(password, statement);
+                }
+            }
+
+            return weakPasswords;
         }
 
         [Authorize]
-        public IActionResult EditPassword()
+        [HttpGet("EditPassword/{id}")]
+        public async Task<IActionResult> EditPassword(int id)
         {
-            return View();
+            _logger.LogInformation($"Logging {id}");
+
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+
+            if (userIdClaim == null)
+            {
+                return Unauthorized();
+            }
+
+            int userId = int.Parse(userIdClaim.Value);
+
+            Passwords password = await _context.Passwords.Where(p => p.UserId == userId && p.Id == id).FirstAsync();
+
+            return View(password);
+        }
+
+        [Authorize]
+        [HttpPut("EditPassword/{id}")]
+        public async Task<IActionResult> EditPassword([FromBody] Passwords model,  int id)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+
+            if (userIdClaim == null)
+            {
+                return Unauthorized();
+            }
+
+            int userId = int.Parse(userIdClaim.Value);
+
+            await _context.Passwords.Where(p => p.UserId == userId && p.Id == id).ExecuteUpdateAsync(setters => setters
+                .SetProperty(p => p.Username, model.Username)
+                .SetProperty(p => p.Password, model.Password)
+                .SetProperty(p => p.Notes, model.Notes)
+                );
+
+            await _context.SaveChangesAsync();
+
+            return Json(new
+            { 
+                Username = model.Username,
+                Password = model.Password,
+                Notes = model.Notes,
+            });
+        }
+
+        [Authorize]
+        [HttpDelete("DeletePassword/{id}")]
+        public async Task<IActionResult> DeletePassword(int id)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+
+            if (userIdClaim == null)
+            {
+                return Unauthorized();
+            }
+
+            int userId = int.Parse(userIdClaim.Value);
+
+            await _context.Passwords.Where(p => p.UserId == userId && p.Id == id).ExecuteDeleteAsync();
+
+            await _context.SaveChangesAsync();
+
+            return Json(new { redirectToUrl = Url.Action("PasswordManager", "Home") });
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
