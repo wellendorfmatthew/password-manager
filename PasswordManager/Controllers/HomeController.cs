@@ -232,7 +232,7 @@ namespace PasswordManager.Controllers
 
             if (userIdClaim == null)
             {
-                return Enumerable.Empty<Passwords>();
+                return [];
             }
 
             int userId = int.Parse(userIdClaim.Value);
@@ -241,9 +241,100 @@ namespace PasswordManager.Controllers
         }
 
         [Authorize]
-        public IActionResult Report()
+        public async Task<IActionResult> Report()
         {
-            return View();
+            ReportModel model = new()
+            {
+                IdenticalPasswords = await NonUniquePasswords(),
+                WeakPasswords = await WeakPasswords()
+            };
+
+            return View(model);
+        }
+
+        public async Task<List<Passwords>> NonUniquePasswords()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+
+            if (userIdClaim == null)
+            {
+                return [];
+            }
+
+            int userId = int.Parse(userIdClaim.Value);
+
+            List<Passwords> passwords = await _context.Passwords
+                .Where(p => p.UserId == userId)
+                .ToListAsync();
+
+            var nonUniquePasswordGroups = passwords
+                .GroupBy(p => p.Password)
+                .Where(g => g.Count() > 1)
+                .ToList();
+
+            List<Passwords> nonUniquePasswords = nonUniquePasswordGroups
+                .SelectMany(g => g)
+                .ToList();
+
+            return nonUniquePasswords;
+        }
+
+        public async Task<Dictionary<Passwords, string>> WeakPasswords()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            Dictionary<Passwords, string> weakPasswords = [];
+            const string uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            const string lowercase = "abcdefghijklmnopqrstuvwxyz";
+            const string numbers = "0123456789";
+            const string specialCharacters = "!@#$%^&*_+-?";
+
+            if (userIdClaim == null)
+            {
+                return weakPasswords;
+            }
+
+            int userId = int.Parse(userIdClaim.Value);
+
+            List<Passwords> passwords = await _context.Passwords
+                .Where(p => p.UserId == userId)
+                .ToListAsync();
+
+            foreach(var password in passwords)
+            {
+                string statement = "";
+
+                if (password.Password.Length < 11)
+                {
+                    statement += "Password must contain at least 11 characters";
+                }
+
+                if (!password.Password.Any(c => uppercase.Contains(c)))
+                {
+                    statement += "Password must contain at least one upper case character";
+                }
+
+                if (!password.Password.Any(c => lowercase.Contains(c)))
+                {
+                    statement += "Password must contain at least one lower case character";
+                }
+
+                if (!password.Password.Any(c => numbers.Contains(c)))
+                {
+                    statement += "Password must contain at least one number";
+                }
+
+                if (!password.Password.Any(c => specialCharacters.Contains(c)))
+                {
+                    statement += "Password must contain at least one special character";
+                }
+
+                if (!string.IsNullOrEmpty(statement))
+                {
+                    weakPasswords.Add(password, statement);
+                }
+            }
+
+            return weakPasswords;
         }
 
         [Authorize]

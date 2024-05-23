@@ -25,6 +25,10 @@
       "PackagePath": "staticwebassets\\Public\\right-arrow.png"
     },
     {
+      "Id": "C:\\Users\\leche\\source\\repos\\PasswordManager\\PasswordManager\\wwwroot\\Public\\up-arrow.png",
+      "PackagePath": "staticwebassets\\Public\\up-arrow.png"
+    },
+    {
       "Id": "C:\\Users\\leche\\source\\repos\\PasswordManager\\PasswordManager\\wwwroot\\css\\site.css",
       "PackagePath": "staticwebassets\\css\\site.css"
     },
