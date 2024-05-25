@@ -501,5 +501,45 @@ namespace PasswordManager.Controllers
                 PasswordStrength = model.PasswordStrength
             });
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetUserSession()
+        {
+            var userSession = await GetSession();
+
+            return Json(userSession);
+        }
+        public async Task<UserSession> GetSession()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+
+            if (userIdClaim == null)
+            {
+                return new UserSession
+                {
+                    IsAuthenticated = false,
+                    UserName = null
+                };
+            }
+
+            int userId = int.Parse(userIdClaim.Value);
+
+            Users user = await _context.Users.Where(p => p.Id == userId).FirstAsync();
+
+            if (user == null) 
+            {
+                return new UserSession
+                {
+                    IsAuthenticated = false,
+                    UserName = null
+                };
+            }
+
+            return new UserSession
+            {
+                IsAuthenticated = true,
+                UserName = user.Username
+            };
+        }
     }
 }
