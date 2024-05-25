@@ -4,9 +4,9 @@
     ViewData["Title"] = "Password Generator";
 }
 
-<div class="w-screen h-screen flex items-center justify-center flex-col gap-10 mb-52">
+<div class="w-screen h-screen flex items-center justify-center flex-col gap-10">
     <h2 class="text-2xl text-black font-semibold">Password Generator</h2>
-    <div class="w-1/2 h-[500px] bg-red-600 flex items-center justify-center flex-col gap-4">
+    <div class="w-1/2 h-[500px] flex items-center justify-center flex-col gap-4" style="background-color: #2092E5">
         <div class="gap-2 flex flex-col w-1/2 items-center">
             <p class="text-xl text-white truncate text-nowrap w-full" id="generated-password">@Model.GeneratedPassword</p>
             <hr class="border-white border-2 w-full" />
@@ -14,10 +14,10 @@
             <input type="range" id="length-slider" asp-for="Length" min="4" max="64" value="@Model.Length" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700">
             <label for="Length" class="block mb-2 text-xl text-white">Length: <span id="length-value">@Model.Length</span></label>
         </div>
-        <button class="h-16 w-[150px] bg-yellow-200 text-2xl" id="copy-button">
+        <button class="h-16 w-[150px] bg-yellow-200 text-2xl hover:bg-yellow-100 transition delay-100" id="copy-button">
             Copy
         </button>
-        <button class="h-16 w-[150px] bg-white text-2xl" id="regenerate-button">
+        <button class="h-16 w-[150px] bg-white text-2xl hover:bg-slate-100 transition delay-100" id="regenerate-button">
             Regenerate
         </button>
         <div class="flex flex-col gap-10">

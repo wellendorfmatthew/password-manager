@@ -7,11 +7,18 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body>
-    <div class="w-screen h-[100px] flex items-center justify-between bg-red-600">
+    <div class="w-screen h-[100px] flex items-center justify-between" style="background-color: #2092E5">
         <a class="text-3xl text-white ml-12" asp-controller="Home" asp-action="Index">PM</a>
-        <div class="flex items-center gap-8 mr-12">
-            <a class="text-xl text-white" asp-controller="Home" asp-action="Signin">Sign In</a>
-            <a class="text-xl text-white" asp-controller="Home" asp-action="Signup">Sign Up</a>
+        <img src="/Public/avataricon.png" alt="Alternate Text" style="display: none" id="avatar" class="mr-12 cursor-pointer" />
+        <div class="flex flex-col items-center border-black border-2 bg-white absolute right-0 top-[67px] p-6 gap-2" style="display: none" id="dropdown-menu">
+            <a class="text-md font-semibold hover:underline" asp-controller="Home" asp-action="PasswordManager">Password Manager</a>
+            <a class="text-md font-semibold hover:underline" asp-controller="Home" asp-action="Index">Password Generator</a>
+            <a class="text-md font-semibold hover:underline" asp-controller="Home" asp-action="NewPassword">Add New Password</a>
+            <a class="text-md font-semibold hover:underline" asp-controller="Home" asp-action="Signout">Sign Out</a>
+        </div>
+        <div class="flex items-center gap-8 mr-12" id="auth-links">
+            <a class="text-xl text-white hover:underline" asp-controller="Home" asp-action="Signin">Sign In</a>
+            <a class="text-xl text-white hover:underline" asp-controller="Home" asp-action="Signup">Sign Up</a>
         </div>
     </div>
     @RenderBody()
@@ -20,5 +27,32 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await Html.PartialAsync("_ValidationScriptsPartial")
     @await RenderSectionAsync("Scripts", required: false)
+    <script>
+        $(document).ready(function () {
+            $.ajax({
+                url: '@Url.Action("GetUserSession", "Home")',
+                method: 'GET',
+                success: function (data) {
+                    if (data.isAuthenticated) {
+                        console.log(data);
+                        $('#avatar').css("display", "block");
+                        $('#auth-links').css("display", "none");
+                    } else {
+                        console.log(data);
+                        console.log(data.isAuthenticated);
+                        $('#avatar').css("display", "none");
+                        $('#auth-links').css("display", "flex");
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error(error);
+                }
+            })
+
+            $('#avatar').click(function() {
+                $('#dropdown-menu').slideToggle();
+            })
+        })
+    </script>
 </body>
 </html>
