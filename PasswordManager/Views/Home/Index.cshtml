@@ -4,8 +4,8 @@
     ViewData["Title"] = "Password Generator";
 }
 
-<div class="w-screen h-screen flex items-center justify-center flex-col gap-10">
-    <h2 class="text-2xl text-black font-semibold">Password Generator</h2>
+<div class="w-screen flex items-center justify-center flex-col gap-10">
+    <h2 class="text-2xl text-black font-semibold mt-12">Password Generator</h2>
     <div class="w-1/2 h-[500px] flex items-center justify-center flex-col gap-4" style="background-color: #2092E5">
         <div class="gap-2 flex flex-col w-1/2 items-center">
             <p class="text-xl text-white truncate text-nowrap w-full" id="generated-password">@Model.GeneratedPassword</p>
@@ -25,7 +25,7 @@
 				<div class="flex gap-2 items-center">
                     <input type="checkbox" asp-for="IncludeUpper" id="include-upper" class="size-4" />
                     <label for="IncludeUpper" class="text-base font-semibold">
-                        Upper
+                        Upper&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                     </label>
                 </div>
                 <div class="flex gap-2 items-center">
@@ -50,6 +50,9 @@
                 </div>
             </div>
         </div>
+    </div>
+    <div class="flex items-center justify-center p-4" style="display: none" id="clipboad">
+        <p class="text-base text-white font-semibold">Copied to clipboad</p>
     </div>
 </div>
 
@@ -87,6 +90,7 @@
                     }
                 });
             }
+
             $('#length-slider').on('input', generatePassword);
             $('#regenerate-button').on('click', generatePassword);
             $('#include-upper').on('change', generatePassword);
@@ -98,7 +102,14 @@
                 var passwordText = $('#generated-password').text();
 
                 try {
-                    navigator.clipboard.writeText(passwordText)
+                    navigator.clipboard.writeText(passwordText);
+                    $('#clipboad').css("background-color", "#2092E5").slideToggle();
+                    $('#copy-button').prop('disabled', true);
+
+                    setTimeout(function () {
+                        $('#clipboad').css("display", "none").fadeOut();
+                        $('#copy-button').prop('disabled', false);
+                    }, 1000);
                 } catch (error) {
                     console.error(error);
                 }
