@@ -556,5 +556,13 @@ namespace PasswordManager.Controllers
                 UserName = user.Username
             };
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Signout()
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+            return RedirectToAction("Index");
+        }
     }
 }
