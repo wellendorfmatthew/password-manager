@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "WzQnwQEhD/N1Lc7CYiSbEDloAXaQGnXylAy380KTfPY=",
+  "Hash": "wl5fpo/vuMelopmX8RfpOg93V9wPGcrfY+BdS3HV8HM=",
   "Source": "PasswordManager",
   "BasePath": "_content/PasswordManager",
   "Mode": "Default",
@@ -1288,6 +1288,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\Public\\right-arrow.png"
+    },
+    {
+      "Identity": "C:\\Users\\leche\\source\\repos\\PasswordManager\\PasswordManager\\wwwroot\\Public\\spinner.gif",
+      "SourceId": "PasswordManager",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\leche\\source\\repos\\PasswordManager\\PasswordManager\\wwwroot\\",
+      "BasePath": "_content/PasswordManager",
+      "RelativePath": "Public/spinner.gif",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\Public\\spinner.gif"
     },
     {
       "Identity": "C:\\Users\\leche\\source\\repos\\PasswordManager\\PasswordManager\\wwwroot\\Public\\up-arrow.png",

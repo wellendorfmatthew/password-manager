@@ -241,6 +241,21 @@ namespace PasswordManager.Controllers
         }
 
         [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> GetReport()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+
+            if (userIdClaim == null)
+            {
+                return Unauthorized();
+            }
+
+            return Json(new { url = Url.Action("Report") });
+        }
+
+        [Authorize]
+        [HttpGet]
         public async Task<IActionResult> Report()
         {
             ReportModel model = new()
@@ -540,6 +555,14 @@ namespace PasswordManager.Controllers
                 IsAuthenticated = true,
                 UserName = user.Username
             };
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Signout()
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+            return RedirectToAction("Index");
         }
     }
 }

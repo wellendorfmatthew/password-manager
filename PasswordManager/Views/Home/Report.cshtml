@@ -4,8 +4,8 @@
     ViewData["Title"] = "Report";
 }
 
-<div class="w-screen h-screen flex items-center justify-center flex-col gap-10 mb-52">
-    <h2 class="text-2xl text-black font-semibold">Report</h2>
+<div class="w-screen flex items-center justify-center flex-col gap-10">
+    <h2 class="text-2xl text-black font-semibold mt-12">Report</h2>
     <div class="w-1/2 h-[500px] border-black border flex items-center flex-col gap-12">
         <div class="w-full flex items-center flex-col">
             <div class="flex justify-between items-center w-full h-[80px]">
@@ -26,7 +26,7 @@
                     <div class="flex justify-between items-center w-full h-[80px]">
                         <p class="text-2xl font-semibold ml-8">@item.Website</p>
                         <p class="text-base text-gray-600">@item.Username</p>
-                        <a asp-controller="Home" asp-action="EditPassword" asp-route-id="@item.Id"><img src="/Public/right-arrow.png" class="mr-8" alt="Alternate Text" /></a>
+                        <a asp-controller="Home" asp-action="EditPassword" asp-route-id="@item.Id"><img src="/Public/right-arrow.png" class="mr-8 hover:opacity-70 transition delay-100" alt="Alternate Text" /></a>
                     </div>
                 }
             </div>
@@ -49,7 +49,7 @@
                     <div class="flex justify-between items-center w-full h-[80px]">
                         <p class="text-2xl font-semibold ml-8">@item.Key.Website</p>
                         <p class="text-base text-gray-600">@item.Key.Username</p>
-                        <a asp-controller="Home" asp-action="EditPassword" asp-route-id="@item.Key.Id"><img src="/Public/right-arrow.png" class="mr-8" alt="Alternate Text" /></a>
+                        <a asp-controller="Home" asp-action="EditPassword" asp-route-id="@item.Key.Id"><img src="/Public/right-arrow.png" class="mr-8 hover:opacity-70 transition delay-100" alt="Alternate Text" /></a>
                     </div>
                 }
                 <p class="text-xl font-semibold">Passwords must contain at least:</p>
