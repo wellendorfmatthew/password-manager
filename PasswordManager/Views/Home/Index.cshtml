@@ -68,6 +68,11 @@
                 var includeNumbers = $('#include-numbers').is(':checked');
                 var includeSymbols = $('#include-symbols').is(':checked');
 
+                if (!includeUpper && !includeLower && !includeNumbers && !includeSymbols) {
+                    $('#include-upper').prop("checked", true);
+                    includeUpper = true;
+                }
+
                 $.ajax({
                     type: 'POST',
                     url: 'Home/GeneratePassword',
