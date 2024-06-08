@@ -218,9 +218,9 @@ namespace PasswordManager.Controllers
         {
             var passwords = await GetUserPasswords();
 
-            if (passwords  == null || !passwords.Any()) 
+            if (passwords == null || !passwords.Any()) 
             { 
-                return Unauthorized(); // Will likely need to change later
+                return RedirectToAction("NewPassword"); // Will likely need to change later
             }
 
             return View(passwords);
